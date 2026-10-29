@@ -29,3 +29,17 @@ Limits: not for unburned areas, and not where debris flows usually come from sha
 **Small differences that remain.** I have 817 training rows against the report's 815, because the inventory has been corrected and reformatted since 2016. My test set has 503 rows, while the report's Table 3 lists 428 for the 15-minute model. I haven't traced why yet.
 
 **Next.** Leave-one-fire-out testing, which holds out one whole fire at a time to see how the model does on a fire it has never seen.
+
+**Leave-one-fire-out results.** Holding out one whole fire at a time, the median AUC was [__] across [N] fires (all states) and [__] across [N] fires (California only). Most fires scored between 0.8 and 1.0, but [number] scored below 0.65, and the lowest was [fire name] at [__]. [Fire name] had only [n] rows and [n] debris flows, so [say whether you trust that score, and why].
+
+## Results: testing on fires the model has never seen
+
+To check how M1 does on a new fire, I used leave-one-fire-out validation. For each fire, I trained the model on all the other fires and scored it on the one left out. I only scored fires with at least 30 rows and both outcomes (debris flow and no debris flow), since AUC can't be computed otherwise.
+
+- **Median AUC, all states:** 0.84 across 26 fires.
+- **Median AUC, California only:** 0.89 across 9 fires.
+- **Spread:** 18 of the 26 fires scored 0.8 or higher, and 4 scored below 0.65. The lowest was Cameron Peak (Colorado) at 0.42, with 30 rows and 20 debris flows. Little Bear (New Mexico) scored 0.56 and East Troublesome (Colorado) 0.59.
+
+![AUC on each held-out fire](notes/loo_auc.png)
+
+**What this means.** An AUC of 0.5 is a coin flip and 1.0 is perfect. The model ranks most new fires well, but its score varies a lot from fire to fire. The low scores are not limited to one region. Some of the highest scores come from fires with very few debris flows (Witch has 1, Flag has 2, Briceburg and Gladiator have 3), so scores near 1.0 on those fires are not reliable. The median is a safer summary than any single fire. This test holds out one fire at a time, so other fires from the same region are still in training. My earlier check, training on southern California and testing on other states, is the harder test of new regions.
